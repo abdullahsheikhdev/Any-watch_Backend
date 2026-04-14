@@ -14,10 +14,10 @@ const userSchema = new Schema <userDocument> ({
     name: {type: String, required: true},
     email: {type: String, required: true},
     password: {type: String, required: true},
-    verifiOtp: {type: String},
-    verifiOtpExpire: {type: Number},
-    passwordResetOtp: {type: String},
-    passwordResetOtpExpire: {type: Number},
+    verifiOtp: {type: String,   default: ''},
+    verifiOtpExpire: {type: Number, default: 0},
+    passwordResetOtp: {type: String, default: ''},
+    passwordResetOtpExpire: {type: Number, default: 0},
     
 
 },{timestamps: true})
