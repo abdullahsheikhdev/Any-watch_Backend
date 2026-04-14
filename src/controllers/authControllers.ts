@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import userModel from "../models/userModel.js";
 import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken'
-import transporter from "../config/nodemiller.js";
+import transporter from "../config/nodemailer.js";
 
 
 export const registration = async (req : Request, res : Response) => {
@@ -19,18 +19,17 @@ export const registration = async (req : Request, res : Response) => {
         if( existingUser ){
             return res.status(400).json({message: 'User already exists'})
         }
+
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new userModel({ name, email, password: hashedPassword });
         await newUser.save();
-        return res.status(201).json({message: 'User registered successfully'})
 
         const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET as string, { expiresIn: '4h' });
 
-        res.cookie('__Host-token', token, {
+        res.cookie('token', token, {
             httpOnly: true,
-            secure: true,
-            sameSite: 'lax',
-            path: '/',
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
             maxAge: 4 * 60 * 60 * 1000 // 4 hours   
         });
 
@@ -40,10 +39,13 @@ export const registration = async (req : Request, res : Response) => {
             subject: 'Welcome to Move Seat Booking',
             text: `Hello ${name},\n\nThank you for registering at Move Seat Booking! We're excited to have you on board. If you have any questions or need assistance, feel free to reach out to our support team.\n\nBest regards,\nThe Move Seat Booking Team`
         };
+        
         await transporter.sendMail(mailOptions);
 
-    } catch (error) {
-        return res.status(500).json({message: 'Internal server error'})
-    }
+        return res.status(201).json({success: true, message: 'User registered successfully'})
 
+    } catch (error) {
+        console.error('Registration error:', error);
+        return res.status(500).json({success: false, message: 'Internal server error'})
+    }
 }

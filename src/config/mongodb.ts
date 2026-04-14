@@ -4,7 +4,7 @@ const connectDB = async () => {
     try {
         mongoose.connection.on('connected', () => console.log('MongoDB connected successfully'));
         
-        await mongoose.connect(`${process.env.MONGODB_URL}/meam_stack`, {
+        await mongoose.connect(`${process.env.MONGODB_URL}/ANY_Watch`, {
             autoSelectFamily: false,
         });
     } catch (error) {
