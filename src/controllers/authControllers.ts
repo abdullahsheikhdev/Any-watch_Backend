@@ -49,3 +49,52 @@ export const registration = async (req : Request, res : Response) => {
         return res.status(500).json({success: false, message: 'Internal server error'})
     }
 }
+
+export const login = async (req : Request, res : Response) => {
+    const {email, password} = req.body;
+
+    if(!email || !password){
+        return res.status(400).json({message: 'All fields are required'})
+    }
+
+    try {
+        
+        const user = await userModel.findOne({ email });
+        
+        if( !user ){
+            return res.status(400).json({message: 'Invalid email or password'})
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        if( !isPasswordValid ){
+            return res.status(400).json({message: 'Invalid email or password'})
+        }
+
+        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET as string, { expiresIn: '4h' });
+
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+            maxAge: 4 * 60 * 60 * 1000 // 4 hours   
+        });
+
+        return res.status(200).json({success: true, message: 'Login successful'})
+
+    } catch (error) {
+        return res.json({ success: false, message: (error as Error).message });
+    }
+}
+export const logout = (req : Request, res : Response) => {
+    try {
+        res.clearCookie('token', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        });
+        return res.status(200).json({success: true, message: 'Logout successful'})
+    } catch (error) {
+        return res.json({ success: false, message: (error as Error).message });
+    }
+}
