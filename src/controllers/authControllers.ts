@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import userModel from "../models/userModel.js";
 import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken'
+import transporter from "../config/nodemiller.js";
 
 
 export const registration = async (req : Request, res : Response) => {
@@ -32,6 +33,14 @@ export const registration = async (req : Request, res : Response) => {
             path: '/',
             maxAge: 4 * 60 * 60 * 1000 // 4 hours   
         });
+
+        const mailOptions = {
+            from: process.env.SENDER_EMAIL,
+            to: email,
+            subject: 'Welcome to Move Seat Booking',
+            text: `Hello ${name},\n\nThank you for registering at Move Seat Booking! We're excited to have you on board. If you have any questions or need assistance, feel free to reach out to our support team.\n\nBest regards,\nThe Move Seat Booking Team`
+        };
+        await transporter.sendMail(mailOptions);
 
     } catch (error) {
         return res.status(500).json({message: 'Internal server error'})
