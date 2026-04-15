@@ -6,6 +6,7 @@ interface userDocument extends mongoose.Document {
     password: string,
     verifiOtp: string,
     verifiOtpExpire: number,
+    isVerified: boolean,
     passwordResetOtp: string,
     passwordResetOtpExpire: number
 }
@@ -16,6 +17,7 @@ const userSchema = new Schema <userDocument> ({
     password: {type: String, required: true},
     verifiOtp: {type: String,   default: ''},
     verifiOtpExpire: {type: Number, default: 0},
+    isVerified: {type: Boolean, default: false},
     passwordResetOtp: {type: String, default: ''},
     passwordResetOtpExpire: {type: Number, default: 0},
     
