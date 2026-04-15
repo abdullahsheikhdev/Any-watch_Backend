@@ -98,3 +98,17 @@ export const logout = (req : Request, res : Response) => {
         return res.json({ success: false, message: (error as Error).message });
     }
 }
+
+export const sendRegisterOtp = async (req : Request, res : Response) => {
+    const { email } = req.body;
+
+    if (!email) {
+        return res.status(400).json({ message: 'Email is required' });
+    }
+
+    try {
+        
+    } catch (error) {
+        return res.json({ success: false, message: (error as Error).message });
+    }
+}
