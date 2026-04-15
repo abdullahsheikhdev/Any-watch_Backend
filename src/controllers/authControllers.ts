@@ -234,3 +234,102 @@ export const resendVerificationCode = async (req: AuthRequest, res: Response) =>
         return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 };
+
+export const passwordResetOtp = async (req: Request, res: Response) => {
+    const { email } = req.body;
+
+    if (!email) {
+        return res.status(400).json({ message: 'Email is required' });
+    }
+
+    try {
+        const user = await userModel.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Generate password reset OTP
+        const resetOtp = Math.floor(100000 + Math.random() * 900000).toString();
+        const resetOtpExpires = new Date(Date.now() + 15 * 60 * 1000);
+
+        user.passwordResetOtp = resetOtp;
+        user.passwordResetOtpExpire = resetOtpExpires.getTime();
+        await user.save();
+
+        // Send email
+        const mailOptions = {
+            from: process.env.SENDER_EMAIL,
+            to: email,
+            subject: 'Password Reset OTP - Move Seat Booking',
+            html: `
+                <h2>Password Reset Request</h2>
+                <p>Hello ${user.name},</p>
+                <p>Your password reset OTP is:</p>
+                <h1 style="color: #4CAF50; font-size: 32px; letter-spacing: 5px;">${resetOtp}</h1>
+                <p>This OTP will expire in 15 minutes.</p>
+                <p>If you didn't request a password reset, please ignore this email.</p>
+            `
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        return res.status(200).json({
+            success: true,
+            message: 'Password reset OTP sent successfully'
+        });
+
+    } catch (error) {
+        console.error('Password reset OTP error:', error);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+export const resetPassword = async (req: Request, res: Response) => {
+    const { email, otp, newPassword } = req.body;
+
+    if (!email || !otp || !newPassword) {
+        return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    try {
+        const user = await userModel.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Check if OTP has expired
+        if (user.passwordResetOtpExpire && new Date(user.passwordResetOtpExpire) < new Date()) {
+            return res.status(400).json({ 
+                success: false,
+                message: 'Password reset OTP has expired',
+                expired: true
+            });
+        }
+
+        // Check if OTP matches
+        if (user.passwordResetOtp !== otp) {
+            return res.status(400).json({ 
+                success: false,
+                message: 'Invalid password reset OTP' 
+            });
+        }
+
+        // Hash new password and update user
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+        user.passwordResetOtp = '';
+        user.passwordResetOtpExpire = 0;
+        await user.save();
+
+        return res.status(200).json({
+            success: true,
+            message: 'Password reset successful'
+        });
+
+    } catch (error) {
+        console.error('Reset password error:', error);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
