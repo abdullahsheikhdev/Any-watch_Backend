@@ -48,8 +48,8 @@ export const registration = async (req: Request, res: Response) => {
 
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+            secure: true,
+            sameSite: 'none',
             maxAge: 4 * 60 * 60 * 1000
         });
 
