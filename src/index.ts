@@ -7,6 +7,7 @@ import connectDB from "./config/mongodb.js";
 import authRouter from "./routers/authRouters.js";
 import adminRouter from "./routers/adminRouters.js";
 import { initializeAdmin } from "./utils/initAdmin.js";
+import userRouters from "./routers/userRouters.js";
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -30,6 +31,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/user", userRouters);
 
 const startServer = async () => {
   try {
