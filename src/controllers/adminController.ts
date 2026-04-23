@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { adminModel } from '../models/adminModel.js';
+// import { adminModel } from '../models/adminModel.js';
 import  userModel  from '../models/userModel.js';
 import { bookingModel } from '../models/bookingModel.js';
 import { showModel } from '../models/showModel.js';
@@ -24,18 +24,7 @@ export const adminLogin = async (req: Request, res: Response) => {
             });
         }
 
-        const admin = await adminModel.findOne({ email });
-
-        if (!admin) {
-            return res.status(401).json({ 
-                success: false,
-                message: 'Invalid credentials' 
-            });
-        }
-
-        const isPasswordValid = await bcrypt.compare(password, admin.password);
-
-        if (!isPasswordValid) {
+        if (password !== process.env.ADMIN_PASSWORD) {
             return res.status(401).json({ 
                 success: false,
                 message: 'Invalid credentials' 
@@ -43,8 +32,8 @@ export const adminLogin = async (req: Request, res: Response) => {
         }
 
         const token = jwt.sign(
-            { adminId: admin._id },
-            process.env.JWT_SECRET as string,
+            { adminId: 'admin' }, 
+            process.env.JWT_ADMIN_SECRET as string,
             { expiresIn: '8h' }
         );
 
@@ -58,11 +47,6 @@ export const adminLogin = async (req: Request, res: Response) => {
         return res.status(200).json({
             success: true,
             message: 'Login successful',
-            admin: {
-                id: admin._id,
-                name: admin.name,
-                email: admin.email
-            }
         });
 
     } catch (error) {
@@ -388,60 +372,6 @@ export const getUserDetails = async (req: AdminRequest, res: Response) => {
         });
     }
 };
-
-// Change Admin Password
-export const changeAdminPassword = async (req: AdminRequest, res: Response) => {
-    const { currentPassword, newPassword } = req.body;
-
-    if (!currentPassword || !newPassword) {
-        return res.status(400).json({ 
-            message: 'Current password and new password are required' 
-        });
-    }
-
-    if (newPassword.length < 8) {
-        return res.status(400).json({ 
-            message: 'New password must be at least 8 characters long' 
-        });
-    }
-
-    try {
-        const admin = await adminModel.findById(req.adminId);
-
-        if (!admin) {
-            return res.status(404).json({ 
-                success: false,
-                message: 'Admin not found' 
-            });
-        }
-
-        const isPasswordValid = await bcrypt.compare(currentPassword, admin.password);
-
-        if (!isPasswordValid) {
-            return res.status(401).json({ 
-                success: false,
-                message: 'Current password is incorrect' 
-            });
-        }
-
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-        admin.password = hashedPassword;
-        await admin.save();
-
-        return res.status(200).json({
-            success: true,
-            message: 'Password changed successfully'
-        });
-
-    } catch (error) {
-        console.error('Change password error:', error);
-        return res.status(500).json({ 
-            success: false, 
-            message: 'Internal server error' 
-        });
-    }
-};
-
 // Admin Logout
 export const adminLogout = async (req: Request, res: Response) => {
     res.clearCookie('adminToken');
