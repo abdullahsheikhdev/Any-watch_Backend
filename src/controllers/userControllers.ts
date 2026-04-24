@@ -1,9 +1,10 @@
-import type { Request, Response } from 'express';
+import type { Response } from 'express';
 import userModel from '../models/userModel.js';
+import type { AuthRequest } from '../middleware/userAuth.js';
 
-export const getUser =  async (req: Request, res: Response) => {
+export const getUser =  async (req: AuthRequest, res: Response) => {
     try {
-        const { userId } = req.body;
+        const userId = req.userId;
         const user = await userModel.findById(userId)
         
         if (!user) {
