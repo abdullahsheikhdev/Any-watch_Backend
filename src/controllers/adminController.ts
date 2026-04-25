@@ -124,3 +124,23 @@ export const adminAddMovie = async (req: Request, res: Response) => {
         });
     }
 };
+
+export const moviesList = async (req: Request, res: Response) => {
+    try {
+        const allMovies = await Movie.find({}); 
+
+        // ৩. রেসপন্স পাঠানো
+        res.status(200).json({
+            success: true,
+            message: 'All data is available',
+            data: allMovies
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Internal Server Error',
+            error: error instanceof Error ? error.message : "Unknown error"
+        });
+    }
+};
