@@ -2,6 +2,7 @@ import type { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { adminModel } from '../models/adminModel.js';
+import { Movie } from '../models/movieModel.js';
 
 // Admin Login (Using database and bcrypt)
 export const adminLogin = async (req: Request, res: Response) => {
@@ -82,6 +83,44 @@ export const adminLogout = async (req: Request, res: Response) => {
         return res.status(500).json({ 
             success: false, 
             message: 'Error during logout' 
+        });
+    }
+};
+
+
+export const adminAddMovie = async (req: Request, res: Response) => {
+    const { title, description, posterUrl, rating, catagory, releaseDate } = req.body;
+
+    if (!title || !description || !posterUrl || !rating || !catagory || !releaseDate) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'All fields are required' 
+        });
+    }
+
+    try {
+        
+        const newMovie = new Movie({
+            title,
+            description,
+            posterUrl,
+            rating,
+            catagory,
+            releaseDate
+        })
+        await newMovie.save();
+
+        return res.status(201).json({
+            success: true,
+            message: 'Movie added successfully',
+            movie: newMovie
+        });
+
+    } catch (error) {
+        console.error('Error adding movie:', error);
+        return res.status(500).json({ 
+            success: false, 
+            message: 'Error adding movie' 
         });
     }
 };

@@ -7,9 +7,7 @@ const adminRouter = express.Router();
 adminRouter.post('/login', adminLogin);
 adminRouter.post('/logout', adminLogout);
 
-// Route to check if admin is authenticated
-adminRouter.get('/is-auth', adminAuthMiddleware, (req, res) => {
-    res.json({ success: true, message: 'Authenticated' });
-});
+
+
 
 export default adminRouter;

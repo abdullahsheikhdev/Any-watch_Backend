@@ -10,7 +10,7 @@ export const adminAuthMiddleware = async (req: AdminAuthRequest, res: Response, 
         const token = req.cookies.adminToken || req.headers.authorization?.split(' ')[1];
 
         if (!token) {
-            return res.status(401).json({ 
+            return res.status(401).json({
                 success: false, 
                 message: 'Admin access required' 
             });

@@ -5,7 +5,8 @@ interface IMovie extends Document {
   description: string;
   posterUrl: string;
   rating: string;
-  actagory: object;
+  catagory: object;
+  isActiveShow: boolean;
   status: "available" | "coming_soon";
   releaseDate: Date;
 }
@@ -15,7 +16,8 @@ const movieSchema = new Schema<IMovie>({
   description: { type: String },
   posterUrl: { type: String },
   rating: { type: String },
-  actagory: { type: Object },
+  catagory: { type: Object },
+  isActiveShow: { type: Boolean, default: false },
   status: {
     type: String,
     enum: ["available", "coming_soon"],
