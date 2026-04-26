@@ -144,3 +144,34 @@ export const moviesList = async (req: Request, res: Response) => {
         });
     }
 };
+
+export const deleteMovie = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+
+        const deletedMovie = await Movie.findByIdAndDelete(id);
+
+
+        if (!deletedMovie) {
+            return res.status(404).json({
+                success: false,
+                message: "Movie not found with this ID"
+            });
+        }
+
+
+        res.status(200).json({
+            success: true,
+            message: "Movie deleted successfully",
+            data: deletedMovie 
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Failed to delete movie",
+            error: error instanceof Error ? error.message : "Internal Server Error"
+        });
+    }
+};
