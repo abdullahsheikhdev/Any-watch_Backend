@@ -175,3 +175,44 @@ export const deleteMovie = async (req: Request, res: Response) => {
         });
     }
 };
+
+export const updateMovieStatus = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        const validStatuses = ["available", "coming_soon"];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid status. Use 'available' or 'coming_soon'."
+            });
+        }
+
+        const updatedMovie = await Movie.findByIdAndUpdate(
+            id,
+            { status: status }, 
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedMovie) {
+            return res.status(404).json({
+                success: false,
+                message: "Movie not found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: `Status updated successfully to ${status}`,
+            data: updatedMovie
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Something went wrong",
+            error: error instanceof Error ? error.message : "Internal Server Error"
+        });
+    }
+};
