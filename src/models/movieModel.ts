@@ -10,7 +10,7 @@ interface IMovie extends Document {
   status: "available" | "coming_soon";
   releaseDate: Date;
 }
-// yeuuuuu
+
 
 const movieSchema = new Schema<IMovie>({
   title: { type: String, required: true },

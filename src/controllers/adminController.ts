@@ -129,7 +129,7 @@ export const moviesList = async (req: Request, res: Response) => {
     try {
         const allMovies = await Movie.find({}); 
 
-        // ৩. রেসপন্স পাঠানো
+
         res.status(200).json({
             success: true,
             message: 'All data is available',
