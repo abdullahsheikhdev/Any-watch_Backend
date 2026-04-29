@@ -4,6 +4,7 @@ interface IMovie extends Document {
   title: string;
   description: string;
   posterUrl: string;
+  imageFileId?: string;
   rating: string;
   catagory: object;
   isActiveShow: boolean;
@@ -16,6 +17,7 @@ const movieSchema = new Schema<IMovie>({
   title: { type: String, required: true },
   description: { type: String },
   posterUrl: { type: String },
+  imageFileId: { type: String },
   rating: { type: String },
   catagory: { type: Object },
   isActiveShow: { type: Boolean, default: false },

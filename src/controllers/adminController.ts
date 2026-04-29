@@ -89,7 +89,7 @@ export const adminLogout = async (req: Request, res: Response) => {
 
 
 export const adminAddMovie = async (req: Request, res: Response) => {
-    const { title, description, posterUrl, rating, catagory, releaseDate } = req.body;
+    const { title, description, posterUrl, imageFileId, rating, catagory, releaseDate } = req.body;
 
     if (!title || !description || !posterUrl || !rating || !catagory || !releaseDate) {
         return res.status(400).json({ 
@@ -104,6 +104,7 @@ export const adminAddMovie = async (req: Request, res: Response) => {
             title,
             description,
             posterUrl,
+            imageFileId,
             rating,
             catagory,
             releaseDate
