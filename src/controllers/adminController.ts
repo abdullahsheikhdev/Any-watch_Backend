@@ -217,3 +217,6 @@ export const updateMovieStatus = async (req: Request, res: Response) => {
         });
     }
 };
+
+export const uplodeShow = async (req: Request, res: Response) => {
+}

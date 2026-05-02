@@ -6,8 +6,7 @@ interface IShow {
   date: string;
   time: string;
   ticketPrice: number;
-  totalSeats: number;
-  bookedSeats: string[];
+  hallNumber: string;
 }
 
 const showSchema = new Schema<IShow>(
@@ -16,8 +15,8 @@ const showSchema = new Schema<IShow>(
     date: { type: String, required: true },
     time: { type: String, required: true },
     ticketPrice: { type: Number, required: true },
-    totalSeats: { type: Number, default: 50 },
-    bookedSeats: [{ type: String }],
+    hallNumber: { type: String, required: true },
+
   },
   {
     timestamps: true,
