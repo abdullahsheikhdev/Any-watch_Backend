@@ -219,4 +219,8 @@ export const updateMovieStatus = async (req: Request, res: Response) => {
 };
 
 export const uplodeShow = async (req: Request, res: Response) => {
+    const { movieId,date,time,ticketPrice,hallNumber } = req.body;
+
+    if()
+
 }
