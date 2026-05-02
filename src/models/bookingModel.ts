@@ -1,53 +1,22 @@
 // models/booking.model.ts
-import { Schema, model } from 'mongoose';
+import { Schema, Types, model } from 'mongoose';
 
-interface IBooking {
-    user: Schema.Types.ObjectId;
-    show: Schema.Types.ObjectId;
-    seats: string[];
-    totalAmount: number;
-    bookingDate: Date;
-    status: 'pending' | 'confirmed' | 'cancelled';
-    paymentStatus: 'pending' | 'completed' | 'failed' | 'refunded';
-    createdAt: Date;
-    updatedAt: Date;
+interface IBooking extends Document {
+  userId: Types.ObjectId;
+  showId: Types.ObjectId;
+  seats: string[];
+  totalAmount: number;
+  status: 'pending' | 'confirmed' | 'cancelled';
+  createdAt: Date;
 }
 
 const bookingSchema = new Schema<IBooking>({
-    user: { 
-        type: Schema.Types.ObjectId, 
-        ref: 'User', 
-        required: true 
-    },
-    show: { 
-        type: Schema.Types.ObjectId, 
-        ref: 'Show', 
-        required: true 
-    },
-    seats: [{ 
-        type: String, 
-        required: true 
-    }],
-    totalAmount: { 
-        type: Number, 
-        required: true 
-    },
-    bookingDate: { 
-        type: Date, 
-        default: Date.now 
-    },
-    status: { 
-        type: String, 
-        enum: ['pending', 'confirmed', 'cancelled'], 
-        default: 'pending' 
-    },
-    paymentStatus: { 
-        type: String, 
-        enum: ['pending', 'completed', 'failed', 'refunded'], 
-        default: 'pending' 
-    }
-}, {
-    timestamps: true
+  userId: { type: Schema.Types.ObjectId, ref: 'users', required: true },
+  showId: { type: Schema.Types.ObjectId, ref: 'Show', required: true },
+  seats: [{ type: String, required: true }],
+  totalAmount: { type: Number, required: true },
+  status: { type: String, enum: ['pending', 'confirmed', 'cancelled'], default: 'confirmed' },
+  createdAt: { type: Date, default: Date.now }
 });
 
-export const bookingModel = model<IBooking>('Booking', bookingSchema);
+export const Booking = model<IBooking>('Booking', bookingSchema);
