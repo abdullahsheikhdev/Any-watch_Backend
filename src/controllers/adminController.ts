@@ -3,6 +3,8 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { adminModel } from '../models/adminModel.js';
 import { Movie } from '../models/movieModel.js';
+import { showModel } from '../models/showModel.js';
+import { Types } from 'mongoose';
 
 // Admin Login (Using database and bcrypt)
 export const adminLogin = async (req: Request, res: Response) => {
@@ -214,6 +216,40 @@ export const updateMovieStatus = async (req: Request, res: Response) => {
             success: false,
             message: "Something went wrong",
             error: error instanceof Error ? error.message : "Internal Server Error"
+        });
+    }
+};
+
+export const createShow = async (req: Request, res: Response) => {
+    const { movieId, date, time, ticketPrice, hallNumber } = req.body;
+
+    if (!movieId || !date || !time || !ticketPrice || !hallNumber) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'All fields are required' 
+        });
+    }
+
+    try {
+        const newShow = new showModel({
+            movieId,
+            date,
+            time,
+            ticketPrice,
+            hallNumber
+        });
+        await newShow.save();
+
+        return res.status(201).json({
+            success: true,
+            message: 'Show created successfully',
+            show: newShow
+        });
+    } catch (error) {
+        console.error('Error creating show:', error);
+        return res.status(500).json({ 
+            success: false, 
+            message: 'Error creating show' 
         });
     }
 };
