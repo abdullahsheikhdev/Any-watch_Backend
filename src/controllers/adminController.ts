@@ -3,6 +3,8 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { adminModel } from '../models/adminModel.js';
 import { Movie } from '../models/movieModel.js';
+import { showModel } from '../models/showModel.js';
+import { Types } from 'mongoose';
 
 // Admin Login (Using database and bcrypt)
 export const adminLogin = async (req: Request, res: Response) => {
@@ -218,9 +220,9 @@ export const updateMovieStatus = async (req: Request, res: Response) => {
     }
 };
 
-// export const uplodeShow = async (req: Request, res: Response) => {
-//     const { movieId,date,time,ticketPrice,hallNumber } = req.body;
+export const uplodeShow = async (req: Request, res: Response) => {
+    const { movieId,date,time,ticketPrice,hallNumber } = req.body;
 
-//     if()
+    if()
 
-// }
+}
