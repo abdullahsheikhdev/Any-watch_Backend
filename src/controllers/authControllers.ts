@@ -33,7 +33,7 @@ export const registration = async (req: Request, res: Response) => {
             email,
             password: hashedPassword,
             verifiOtp: verificationCode,
-            verifiOtpExpire: verificationCodeExpires,
+            verifiOtpExpire: verificationCodeExpires.getTime(),
             isVerified: false
         });
         
@@ -74,6 +74,13 @@ export const registration = async (req: Request, res: Response) => {
 
         return res.status(201).json({
             success: true,
+            token,
+            user: {
+                id: newUser._id,
+                name: newUser.name,
+                email: newUser.email,
+                isVerified: newUser.isVerified
+            },
             message: 'Registration successful. Please check your email for verification code.'
         });
 
@@ -113,7 +120,17 @@ export const login = async (req : Request, res : Response) => {
             maxAge: 4 * 60 * 60 * 1000 // 4 hours   
         });
 
-        return res.status(200).json({success: true, message: 'Login successful'})
+        return res.status(200).json({
+            success: true,
+            token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                isVerified: user.isVerified
+            },
+            message: 'Login successful'
+        });
 
     } catch (error) {
         return res.json({ success: false, message: (error as Error).message });
@@ -177,6 +194,12 @@ export const verifyEmail = async (req: AuthRequest, res: Response) => {
 
         return res.status(200).json({
             success: true,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                isVerified: true
+            },
             message: 'Email verified successfully'
         });
 
