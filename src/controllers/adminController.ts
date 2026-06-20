@@ -220,9 +220,130 @@ export const updateMovieStatus = async (req: Request, res: Response) => {
     }
 };
 
-export const uplodeShow = async (req: Request, res: Response) => {
-    const { movieId,date,time,ticketPrice,hallNumber } = req.body;
+<<<<<<< HEAD
+// export const uplodeShow = async (req: Request, res: Response) => {
+//     const { movieId,date,time,ticketPrice,hallNumber } = req.body;
 
-    if()
+//     if()
 
-}
+// }
+=======
+export const createShow = async (req: Request, res: Response) => {
+    const { movieId, date, time, ticketPrice, hallNumber } = req.body;
+
+    if (!movieId || !date || !time || !ticketPrice || !hallNumber) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'All fields are required' 
+        });
+    }
+
+    try {
+        const newShow = new showModel({
+            movieId,
+            date,
+            time,
+            ticketPrice,
+            hallNumber
+        });
+        await newShow.save();
+
+        return res.status(201).json({
+            success: true,
+            message: 'Show created successfully',
+            show: newShow
+        });
+    } catch (error) {
+        console.error('Error creating show:', error);
+        return res.status(500).json({ 
+            success: false, 
+            message: 'Error creating show' 
+        });
+    }
+};
+
+export const getShows = async (req: Request, res: Response) => {
+    try {
+        const shows = await showModel.find({}).populate('movieId');
+        return res.status(200).json({
+            success: true,
+            message: 'Shows retrieved successfully',
+            data: shows
+        });
+    } catch (error) {
+        console.error('Error retrieving shows:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error retrieving shows',
+            error: error instanceof Error ? error.message : 'Unknown error'
+        });
+    }
+};
+
+export const deleteShow = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const deletedShow = await showModel.findByIdAndDelete(id);
+
+        if (!deletedShow) {
+            return res.status(404).json({
+                success: false,
+                message: 'Show not found with this ID'
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Show deleted successfully',
+            data: deletedShow
+        });
+    } catch (error) {
+        console.error('Error deleting show:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error deleting show',
+            error: error instanceof Error ? error.message : 'Unknown error'
+        });
+    }
+};
+
+export const updateShow = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const { date, time, ticketPrice, hallNumber } = req.body;
+
+        if (!date || !time || !ticketPrice || !hallNumber) {
+            return res.status(400).json({
+                success: false,
+                message: 'All fields are required'
+            });
+        }
+
+        const updatedShow = await showModel.findByIdAndUpdate(
+            id,
+            { date, time, ticketPrice: Number(ticketPrice), hallNumber },
+            { new: true, runValidators: true }
+        ).populate('movieId');
+
+        if (!updatedShow) {
+            return res.status(404).json({
+                success: false,
+                message: 'Show not found'
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Show updated successfully',
+            data: updatedShow
+        });
+    } catch (error) {
+        console.error('Error updating show:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error updating show',
+            error: error instanceof Error ? error.message : 'Unknown error'
+        });
+    }
+};
+>>>>>>> f80df66aaf4e1afbccad6a9f3191df1564dc63c2
