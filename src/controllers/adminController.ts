@@ -220,14 +220,7 @@ export const updateMovieStatus = async (req: Request, res: Response) => {
     }
 };
 
-<<<<<<< HEAD
-// export const uplodeShow = async (req: Request, res: Response) => {
-//     const { movieId,date,time,ticketPrice,hallNumber } = req.body;
 
-//     if()
-
-// }
-=======
 export const createShow = async (req: Request, res: Response) => {
     const { movieId, date, time, ticketPrice, hallNumber } = req.body;
 
@@ -346,4 +339,3 @@ export const updateShow = async (req: Request, res: Response) => {
         });
     }
 };
->>>>>>> f80df66aaf4e1afbccad6a9f3191df1564dc63c2
